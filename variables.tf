@@ -74,4 +74,12 @@ variable "ten_dot_what_cidr" {
   type    = string
 }
 
+variable "pub_key_for_worker_aws_key_pair" {
+  default = ""
+  type    = string
+}
 
+variable "workers_additional_policies" {
+  default = []
+  type    = list
+}

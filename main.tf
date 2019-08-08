@@ -1,20 +1,22 @@
 module "aws" {
-  source  = "astronomer/astronomer-aws/aws"
-  version = "1.1.29"
-  # source                        = "../terraform-aws-astronomer-aws"
-  deployment_id                 = var.deployment_id
-  admin_email                   = var.email
-  route53_domain                = var.route53_domain
-  vpc_id                        = var.vpc_id
-  private_subnets               = var.private_subnets
-  enable_bastion                = var.enable_bastion
-  enable_windows_box            = var.enable_windows_box
-  tags                          = var.tags
-  extra_sg_ids_for_eks_security = var.security_groups_to_whitelist_on_eks_api
-  min_cluster_size              = var.min_cluster_size
-  max_cluster_size              = var.max_cluster_size
-  ten_dot_what_cidr             = var.ten_dot_what_cidr
-  cluster_type                  = "private"
+  #source  = "astronomer/astronomer-aws/aws"
+  #version = "1.1.29"
+  source                        = "../terraform-aws-astronomer-aws"
+  deployment_id                   = var.deployment_id
+  admin_email                     = var.email
+  route53_domain                  = var.route53_domain
+  vpc_id                          = var.vpc_id
+  private_subnets                 = var.private_subnets
+  enable_bastion                  = var.enable_bastion
+  enable_windows_box              = var.enable_windows_box
+  tags                            = var.tags
+  extra_sg_ids_for_eks_security   = var.security_groups_to_whitelist_on_eks_api
+  min_cluster_size                = var.min_cluster_size
+  max_cluster_size                = var.max_cluster_size
+  ten_dot_what_cidr               = var.ten_dot_what_cidr
+  pub_key_for_worker_aws_key_pair = var.pub_key_for_worker_aws_key_pair
+  workers_additional_policies     = var.workers_additional_policies
+  cluster_type                    = "private"
   # It makes the installation easier to leave
   # this public, then just flip it off after
   # everything is deployed.
