@@ -1,7 +1,7 @@
 module "aws" {
-  #source  = "astronomer/astronomer-aws/aws"
-  #version = "1.1.29"
-  source                        = "../terraform-aws-astronomer-aws"
+  # source  = "astronomer/astronomer-aws/aws"
+  # version = "1.1.29"
+  source                          = "../terraform-aws-astronomer-aws"
   deployment_id                   = var.deployment_id
   admin_email                     = var.email
   route53_domain                  = var.route53_domain
@@ -16,7 +16,7 @@ module "aws" {
   ten_dot_what_cidr               = var.ten_dot_what_cidr
   pub_key_for_worker_aws_key_pair = var.pub_key_for_worker_aws_key_pair
   workers_additional_policies     = var.workers_additional_policies
-  cluster_type                    = "private"
+  cluster_type                    = var.cluster_type
   # It makes the installation easier to leave
   # this public, then just flip it off after
   # everything is deployed.
@@ -48,9 +48,9 @@ module "astronomer" {
   source       = "astronomer/astronomer/kubernetes"
   version      = "1.0.8"
   # source                = "../terraform-kubernetes-astronomer"
-  cluster_type          = "private"
-  private_load_balancer = true
-  astronomer_version    = "0.9.6"
+  cluster_type          = var.cluster_type
+  private_load_balancer = var.private_load_balancer
+  astronomer_version    = var.astronomer_version
   base_domain           = module.aws.base_domain
   db_connection_string  = module.aws.db_connection_string
   tls_cert              = module.aws.tls_cert
