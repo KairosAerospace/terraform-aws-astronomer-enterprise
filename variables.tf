@@ -1,6 +1,12 @@
 variable "route53_domain" {
-  description = "The name of your public route53 hosted zone, does not include a trailing dot. Should match the domain. This is used to generate a certificate with let's encrypt"
+  description = "The name of your public route53 hosted zone, does not include a trailing dot. Should match the domain. This is used to generate a certificate with let's encrypt. If you don't want to make a certificate with let's encrypt, and you also don't want the DNS record created on your behalf, then set this as an empty string, set create_record to falsee, and provide tls_cert and tls_key variables"
   type        = string
+}
+
+variable "create_record" {
+  description = "The name of your public route53 hosted zone, does not include a trailing dot. Should match the domain. This is used to generate a certificate with let's encrypt"
+  default     = true
+  type        = bool
 }
 
 variable "management_api" {
@@ -98,6 +104,28 @@ variable "private_load_balancer" {
 
 variable "astronomer_version" {
   description = "Version of the Astronomer platform installed"
-  default     = "0.10.0"
+  default     = "0.10.2"
   type        = string
+}
+
+variable "cluster_version" {
+  default = "1.13"
+  type    = string
+}
+
+variable "tls_cert" {
+  default     = ""
+  type        = string
+  description = "The signed certificate for the Astronomer Load Balancer. It should be signed by a certificate authorize and should have common name *.base_domain."
+}
+
+variable "tls_key" {
+  default     = ""
+  type        = string
+  description = "The private key corresponding to the signed certificate tls_cert."
+}
+
+variable "lets_encrypt" {
+  default = true
+  type    = bool
 }

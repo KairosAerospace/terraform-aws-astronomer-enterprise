@@ -1,6 +1,6 @@
 module "aws" {
   # source  = "astronomer/astronomer-aws/aws"
-  # version = "1.1.29"
+  # version = "1.1.74"
   source                          = "../terraform-aws-astronomer-aws"
   deployment_id                   = var.deployment_id
   admin_email                     = var.email
@@ -14,9 +14,10 @@ module "aws" {
   min_cluster_size                = var.min_cluster_size
   max_cluster_size                = var.max_cluster_size
   ten_dot_what_cidr               = var.ten_dot_what_cidr
+  cluster_type                    = var.cluster_type
+  cluster_version                 = var.cluster_version
   pub_key_for_worker_aws_key_pair = var.pub_key_for_worker_aws_key_pair
   workers_additional_policies     = var.workers_additional_policies
-  cluster_type                    = var.cluster_type
   # It makes the installation easier to leave
   # this public, then just flip it off after
   # everything is deployed.
@@ -25,6 +26,10 @@ module "aws" {
   # - bastion with proxy
   # - execute terraform from VPC
   management_api = var.management_api
+
+  # if the TLS cert and key are provided, we will want to use
+  # them instead of asking for a Let's Encrypt cert.
+  lets_encrypt = var.lets_encrypt
 }
 
 # Get the AWS_REGION used by the aws provider
@@ -53,8 +58,8 @@ module "astronomer" {
   astronomer_version    = var.astronomer_version
   base_domain           = module.aws.base_domain
   db_connection_string  = module.aws.db_connection_string
-  tls_cert              = module.aws.tls_cert
-  tls_key               = module.aws.tls_key
+  tls_cert              = var.tls_cert == "" ? module.aws.tls_cert : var.tls_cert
+  tls_key               = var.tls_key == "" ? module.aws.tls_key : var.tls_key
 }
 
 data "aws_lambda_invocation" "elb_name" {
@@ -68,12 +73,14 @@ data "aws_elb" "nginx_lb" {
 }
 
 data "aws_route53_zone" "selected" {
-  name = "${var.route53_domain}."
+  count = var.create_record ? 1 : 0
+  name  = "${var.route53_domain}."
 }
 
 resource "aws_route53_record" "astronomer" {
-  zone_id = "${data.aws_route53_zone.selected.zone_id}"
-  name    = "*.${var.deployment_id}.${data.aws_route53_zone.selected.name}"
+  count   = var.create_record ? 1 : 0
+  zone_id = "${data.aws_route53_zone.selected[0].zone_id}"
+  name    = "*.${var.deployment_id}.${data.aws_route53_zone.selected[0].name}"
   type    = "CNAME"
   ttl     = "30"
   records = [data.aws_elb.nginx_lb.dns_name]
